@@ -55,6 +55,8 @@
 
 ---
 
+---
+
 # 📅 3주차: React 개발 환경 구축 및 프로젝트 생성 (3월 18일)
 
 ### 1. 개발 환경 구축 (Node.js)
@@ -105,5 +107,90 @@
 
 ---
 
+---
+
+## 📅 4주차: Vite 업데이트와 컴포넌트 설계의 기초 (3월 25일)
+
+### 1. Vite의 트랜스파일러 변경사항 (2026.03.19 이후)
+- **주요 변경점**: 2026년 3월 19일 이후 Vite로 프로젝트 생성 시 트랜스파일러 선택 메뉴에서 `JavaScript + SWC` 옵션이 제거되었습니다.
+- **기본값 변경**: 이전에는 JavaScript 선택 시 Babel이 설정되었으나, 현재는 **Oxc가 기본 트랜스파일러로 설정**됩니다.
+- **프로젝트 생성 방법**:
+  - ❌ 이전 방식 (더 이상 사용 불가): `npm create vite@latest my-app --template react-swc`
+  - ✅ **현재 방식**: `npm create vite@latest my-app --template react` (인터랙티브 메뉴에서 JavaScript 선택)
+- **설정 확인**: `vite.config.js` 파일에서 `plugins: [react()]` 설정을 통해 기본 Oxc 기반 설정을 확인할 수 있습니다.
+
+---
+
+### 2. 차세대 도구 비교: Oxc vs SWC
+두 도구 모두 Rust 언어로 작성되어 JavaScript 기반의 Babel보다 압도적으로 빠릅니다.
+
+- **SWC (Speedy Web Compiler)**:
+  - 용도: Babel 대체 컴파일러 및 번들러.
+  - 특징: 트랜스파일링(TS→JS)과 번들링에 특화되어 있으며 Next.js 등에서 기본 사용 중.
+- **Oxc (Oxidation Compiler)**:
+  - 용도: ESLint, Prettier, TS 트랜스파일러 등을 모두 통합하려는 고성능 도구 모음.
+  - **특징**: 
+    - 파싱(Parsing) 속도가 **SWC보다 3배 이상 빠름**.
+    - ESLint보다 **100배 이상 빠른** 린팅(Linting) 성능 제공.
+- **권장사항**: 특별한 사유가 없다면 속도가 더 빠른 Oxc(기본값)를 사용하는 것이 권장됩니다.
+
+---
+
+### 3. 컴포넌트의 생성 및 사용
+- **생성 단계**:
+  1. 컴포넌트 이름과 동일한 이름의 파일 생성 (`PascalCase`).
+  2. `export default` 키워드를 사용하여 외부에서 쓸 수 있게 함.
+  3. `function` 본문 내부(중괄호 `{}`)에 컴포넌트 로직 구현.
+  4. `return` 구문 소괄호 `()` 내부에 반환할 JSX 마크업 작성.
+- **사용 방법**:
+  - 사용하려는 파일 상단에서 컴포넌트를 `import` 함.
+  - 임포트한 이름을 `<컴포넌트명 />` 형태로 호출하여 사용.
+
+---
+
+### 4. 컴포넌트 중첩(Nesting)의 개념과 실습
+- **개념**: 특정 컴포넌트를 다른 컴포넌트 **안에서 호출**하는 것을 의미합니다.
+- **⚠️ 주의 (중요)**: 컴포넌트 **내부에서 다른 컴포넌트를 '선언(정의)'하는 것은 잘못된 방법**입니다. 반드시 최상위 레벨에서 각각 선언하고 호출만 중첩해야 합니다.
+- **디렉토리 관리**:
+  - 컴포넌트가 많아지면 `/src/components/` 디렉토리를 생성하여 별도로 관리합니다.
+  - **예시 구조**: `Gallery` 컴포넌트 내부에 `Profile` 컴포넌트를 중첩하고, 최종적으로 `App.jsx`에서 `Gallery`를 렌더링함.
+
+
+
+---
+
+### 5. 컴포넌트 분리 및 관리 권장사항
+- **파일 분리**: 프로젝트 루트에 파일이 너무 많아지지 않도록 기능별로 분리합니다.
+- **루트 컴포넌트(`App.jsx`)의 역할**: 
+  - 최종적으로 렌더링할 컴포넌트들을 모아두는 '그릇' 역할로 사용합니다.
+  - 가능하면 `App.jsx` 내부에서 새로운 컴포넌트를 직접 정의하지 않는 것이 좋습니다.
+- **계층 구조**: `/src/components/` 내부에 기능별 하위 디렉토리를 만들어 체계적으로 관리합니다.
+
+---
+
+### 6. Export와 Import (가져오기 및 내보내기)
+| 구분 | Default Export | Named Export |
+| :--- | :--- | :--- |
+| **선언 방식** | `export default function Button() {}` | `export function Button() {}` |
+| **가져오기** | `import Button from './button.js'` | `import { Button } from './button.js'` |
+| **특징** | 파일당 **단 하나**만 가능 | 한 파일에 **여러 개** 가능 |
+
+- **Named Export 활용법**:
+  - 여러 개 가져오기: `import { Com1, Com2 } from './files.js'`
+  - 이름 변경하기: `import { Button as MyButton } from './button.js'`
+  - 전체 가져오기(Namespace): `import * as All from './files.js'`
+
+---
+
+### 7. JSX(JavaScript XML)의 3가지 규칙
+React 컴포넌트는 JavaScript 함수이며, 마크업 작성을 위해 JSX 문법을 따릅니다.
+
+1. **하나의 루트 엘리먼트로 반환**: 반드시 하나의 태그로 감싸야 하며, 불필요한 태그를 줄이려면 Fragment(`<>...</>`)를 사용합니다.
+2. **모든 태그 닫기**: `<br />`이나 `<img>` 같이 닫는 태그가 없는 HTML 태그도 반드시 끝에 `/`를 넣어 닫아줘야 합니다.
+3. **카멜 케이스(camelCase) 속성 사용**: HTML의 `class`는 `className`으로, `onclick`은 `onClick`으로 작성합니다.
+
+- **표기법 정리**:
+  - **파스칼 케이스(PascalCase)**: 컴포넌트 이름 (예: `HeaderContent`)
+  - **카멜 케이스(camelCase)**: JSX 속성 이름 (예: `tabIndex`, `strokeWidth`)
 
 
