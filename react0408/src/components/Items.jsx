@@ -54,3 +54,19 @@ export default function Items({ name, isPacked }) {
     </li>
   );
 }
+
+// export default function Items({ name, isPacked }) {
+//   let itemContent = <li>{name}</li>;
+
+//   if (isPacked) {
+//     itemContent = (
+//       <li>
+//         <del>{name + " ✅"}</del>
+//       </li>
+//     );
+//   }
+
+//   return (
+//     itemContent
+//   );
+// }
