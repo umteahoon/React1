@@ -26,11 +26,31 @@
 // }
 
 
-// 논리 연산자 AND(&&) 사용하기 
+// // 논리 연산자 AND(&&) 사용하기 
+// export default function Items({ name, isPacked }) {
+//   return (
+//     <li>
+//       {name} {isPacked && "✅"}
+//     </li>
+//   );
+// }
+
+
+// Step9 조건부로 JSX를 변수에 할당한 후에 렌더링 합니다.
 export default function Items({ name, isPacked }) {
+  let itemContent = name;
+
+  if (isPacked) {
+    itemContent = (
+      <del>
+        {name + " ✅"}
+      </del>
+    );
+  }
+
   return (
     <li>
-      {name} {isPacked && "✅"}
+      {itemContent}
     </li>
   );
 }
