@@ -1,14 +1,21 @@
 import PackingList from './components/PackingList';
-import HeroList from './components/HeroList';
+import MovieHeroes from "./components/MovieHeroes";
+import Kiosk from './components/Kiosk';
+import TeaSet from './components/TeaSat';
 
 function App() {
   return (
     <div className="App">
-      {/* 기존에 있던 패킹 리스트 */}
+      {/* 1. 패킹 리스트 */}
       {/* <PackingList /> */}
       
-      {/* 2. 새로 만든 히어로 리스트 호출 */}
-      <HeroList />
+      {/* 2. 데이터 필터링  */}
+      {/* <MovieHeroes /> */}
+
+      {/* 3. Kiosk 컴포넌트 렌더링 */}
+      <Kiosk />
+
+      {/* <TeaSet/> */}s
     </div>
   );
 }
