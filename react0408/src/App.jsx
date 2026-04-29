@@ -3,6 +3,7 @@ import MovieHeroes from "./components/MovieHeroes";
 import Kiosk from './components/Kiosk';
 import TeaSet from './components/TeaSat';
 import TeaGathering from './components/TeaGathering';
+import ButtonCom from "./components/ButtonCom/ButtonCom";
 
 function App() {
   return (
@@ -16,12 +17,15 @@ function App() {
       {/* 3. Kiosk 컴포넌트 렌더링 */}
       {/* <Kiosk /> */}
 
-
       {/* 4. TeaGathering  1번부터 12번까지 출력 */}
-      {/* <TeaSet/> */}s
+      {/* <TeaSet/> */}
+      {/* <TeaGathering/> */}
 
-      <TeaGathering/>
+      {/* 5. ButtonCom 컴포넌트 추가 */}
+      
+      <ButtonCom />
     </div>
   );
 }
+
 export default App;
