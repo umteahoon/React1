@@ -3,7 +3,8 @@ import MovieHeroes from "./components/MovieHeroes";
 import Kiosk from './components/Kiosk';
 import TeaSet from './components/TeaSat';
 import TeaGathering from './components/TeaGathering';
-import ButtonCom from "./components/ButtonCom/ButtonCom";
+import ButtonCom from "./components/Buttoncom/ButtonCom";
+import Toolbar from "./components/Buttoncom/Toolbar";
 
 function App() {
   return (
@@ -22,8 +23,10 @@ function App() {
       {/* <TeaGathering/> */}
 
       {/* 5. ButtonCom 컴포넌트 추가 */}
-      
-      <ButtonCom />
+      {/* <ButtonCom /> */}
+
+      {/* 6. 이벤트 핸들러에서 Prop 사용하기 실습 */}
+      <Toolbar />
     </div>
   );
 }
