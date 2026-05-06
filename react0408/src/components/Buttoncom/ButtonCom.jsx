@@ -36,17 +36,12 @@
 
 import styles from "./ButtonCom.module.css";
 
-export default function Button({ message, children }) {
-  const handleClick = (e) => {
-    // 1. 전달받은 message prop을 alert으로 출력
-    alert(`메시지: ${message}`);
-    
-    // 2. 클릭된 버튼의 클래스 이름 출력
-    console.log("클릭된 버튼 클래스:", e.target.className);
-  };
-
+export default function ButtonCom({ message, handle, children }) {
   return (
-    <button className={styles.button} onClick={handleClick}>
+    <button 
+      className={styles.button} 
+      onClick={() => handle(message)} // 전달받은 함수에 메시지를 넣어 실행
+    >
       {children}
     </button>
   );
