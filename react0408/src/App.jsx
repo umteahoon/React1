@@ -7,6 +7,7 @@
 // import Toolbar from "./components/Buttoncom/Toolbar";
 import Bubble from "./components/bubble/Bubble";
 import Signup1 from "./components/Signup1";
+import Signup2 from "./components/Signup2";
 
 function App() {
   return (
@@ -34,7 +35,12 @@ function App() {
       {/* 7. 이벤트 전파 실습 */}
       {/* <Bubble /> */}
 
+      {/* Signup1: 기본 동작 유지 (새로고침 발생) */}
       <Signup1 />
+      
+      {/* Signup2: 기본 동작 방지 (새로고침 없음) */}
+      {/* 3. 루트 컴포넌트에서 Signup2를 추가로 호출합니다. */}
+      <Signup2 />
     </div>
   );
 }
