@@ -1,10 +1,11 @@
-import PackingList from './components/PackingList';
-import MovieHeroes from "./components/MovieHeroes";
-import Kiosk from './components/Kiosk';
-import TeaSet from './components/TeaSat';
-import TeaGathering from './components/TeaGathering';
-import ButtonCom from "./components/Buttoncom/ButtonCom";
-import Toolbar from "./components/Buttoncom/Toolbar";
+// import PackingList from './components/PackingList';
+// import MovieHeroes from "./components/MovieHeroes";
+// import Kiosk from './components/Kiosk';
+// import TeaSet from './components/TeaSat';
+// import TeaGathering from './components/TeaGathering';
+// import ButtonCom from "./components/Buttoncom/ButtonCom";
+// import Toolbar from "./components/Buttoncom/Toolbar";
+import Bubble from "./components/bubble/Bubble";
 
 function App() {
   return (
@@ -26,7 +27,11 @@ function App() {
       {/* <ButtonCom /> */}
 
       {/* 6. 이벤트 핸들러에서 Prop 사용하기 실습 */}
-      <Toolbar />
+      {/* <Toolbar /> */}
+
+
+      {/* 7. 이벤트 전파 실습 */}
+      <Bubble />
     </div>
   );
 }

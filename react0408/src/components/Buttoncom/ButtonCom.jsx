@@ -34,15 +34,15 @@
 // }
 
 
-import styles from "./ButtonCom.module.css";
+// import styles from "./ButtonCom.module.css";
 
-export default function ButtonCom({ message, handle, children }) {
-  return (
-    <button 
-      className={styles.button} 
-      onClick={() => handle(message)} // 전달받은 함수에 메시지를 넣어 실행
-    >
-      {children}
-    </button>
-  );
-}
+// export default function ButtonCom({ message, handle, children }) {
+//   return (
+//     <button 
+//       className={styles.button} 
+//       onClick={() => handle(message)} // 전달받은 함수에 메시지를 넣어 실행
+//     >
+//       {children}
+//     </button>
+//   );
+// }
