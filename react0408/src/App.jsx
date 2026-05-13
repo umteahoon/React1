@@ -6,6 +6,7 @@
 // import ButtonCom from "./components/Buttoncom/ButtonCom";
 // import Toolbar from "./components/Buttoncom/Toolbar";
 import Bubble from "./components/bubble/Bubble";
+import Signup1 from "./components/Signup1";
 
 function App() {
   return (
@@ -31,7 +32,9 @@ function App() {
 
 
       {/* 7. 이벤트 전파 실습 */}
-      <Bubble />
+      {/* <Bubble /> */}
+
+      <Signup1 />
     </div>
   );
 }
