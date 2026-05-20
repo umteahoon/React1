@@ -1,6 +1,140 @@
 # ⚛️ React 학습 저장소 (2026)   엄태훈
 
 
+# 📅 12주차: 로컬 변수 상태 저장과 캐러셀(Carousel) 컴포넌트 구현 (5월 20일)
+
+---
+
+## 1. 로컬 변수에 컴포넌트 상태 저장 및 Export 방법
+
+`index` 파일을 작성하여 여러 이미지나 로컬 변수명을 효율적으로 관리하고 내보내는(export) 방식에는 2가지가 있습니다.
+
+### (1) 각각의 이미지 변수명을 모두 export 하는 방식
+- **정의**: 불러온 이미지들을 개별적으로 구조화하여 내보내는 형태
+- **동작**: 각각의 이미지 파일들을 개별 변수로 나누어 외부에 선언
+
+### (2) 변수명을 하나의 객체로 지정하여 export 하는 방식 (권장)
+- **정의**: 로컬 변수명들을 하나의 큰 객체 주머니로 묶어서 내보내는 형태
+- **동작**:  
+  하나의 객체 변수로 묶어 다룸으로써 다른 파일에서 불러와 사용할 때 가독성과 편리성을 높임
+  
+
+```jsx
+import image1 from "./image1.jpg";
+import image2 from "./image2.jpg";
+
+export const images = { image1, image2 };
+```
+---
+
+## 2. 캐러셀(Carousel) 데이터 모듈 제작 패턴
+
+### [Step 1] 로컬 이미지를 관리할 `index.jsx` 작성
+- **정의**: 로컬 이미지 파일들을 컴포넌트와 격리하여 하나의 폴더 내에서 관리하는 단계
+- **동작**:  
+  준비한 로컬 이미지를 정해진 디렉토리에 복사한 뒤, 하나의 객체 변수에 담아 동시에 `export`를 수행함 (이미지가 늘어나면 객체 내부에 추가 등록)
+
+```jsx
+import slider1 from "./localImage1.jpg";
+import slider2 from "./localImage2.jpg";
+
+export const slide = { slider1, slider2 };
+
+```
+- **주의사항**: `*.jpg` 부분은 실제 준비한 파일 이름을 사용하며 로컬 변수명은 자유롭게 지정 가능
+
+### [Step 2] 캐러셀에 사용할 데이터 리스트 (`imgData.jsx`) 제작
+- **정의**: 외부 서버의 온라인 이미지 경로와 내 컴퓨터의 로컬 이미지 경로를 병합하는 과정
+- **동작**:  
+  생성한 이미지 모듈을 불러와 각각의 데이터 속성(`name`, `artist`, `description`, `url`, `alt`)을 가진 객체들을 하나의 배열로 통합하여 관리함 (3개는 온라인 경로, 마지막 2개는 로컬 이미지 사용)
+
+
+```jsx
+import { slide } from "./images";
+
+export const galleryImages = [
+  {
+    name: "Slide 1",
+    artist: "Artist 1",
+    description: "Placeholder image for slide 1",
+    url: "https://placeholder.co/600x400?text=slide1",
+    alt: "Slide 1"
+  },
+  // ... Slide 2, Slide 3 (온라인 경로 사용)
+  {
+    name: "Slide 4",
+    artist: "Artist 4",
+    description: "Placeholder image for slide 4",
+    url: slide.slider1, // 로컬 이미지 변수 연결
+    alt: "Slide 4"
+  },
+  {
+    name: "Slide 5",
+    artist: "Artist 5",
+    description: "Placeholder image for slide 5",
+    url: slide.slider2, // 로컬 이미지 변수 연결
+    alt: "Slide 5"
+  }
+];
+
+```
+
+---
+
+## 3. [Step 3] 캐러셀 컴포넌트(`Carousel.jsx`) 구현 및 메커니즘
+
+배열 데이터의 인덱스를 조작하여 버튼 클릭 시 화면의 이미지와 정보가 동적으로 바뀌는 컴포넌트의 논리적 구조입니다.
+
+### (1) 컴포넌트 구현 절차
+- **정의**: 구조화된 데이터를 기반으로 화면에 렌더링할 타겟 요소를 설정하는 과정
+- **동작**:  
+  1. 제작해 둔 데이터 모듈을 상단에서 `import` 함
+  2. 데이터 배열의 순서를 가리킬 기준 변수(`index`)를 0으로 초기화하여 선언함
+  3. 사용자가 버튼을 클릭할 때마다 값을 1씩 증가시키는 이벤트 핸들러 함수(`handleClick`)를 생성하고 내부에 `console.log(index)`를 작성함
+  4. 현재 순서에 해당하는 배열의 데이터를 추출하여 임시 보관 변수(`slide`)에 저장함
+  5. UI 요소에 해당 데이터 객체의 하위 프로퍼티들을 연결(바인딩)하고 최상위 루트 컴포넌트(`App.jsx`)에서 렌더링하도록 수정함
+
+```jsx
+import { galleryImages } from "./imgData.jsx";
+
+export default function Carousel() {
+  // 인덱스 변수 선언 및 0으로 초기화
+  let index = 0; 
+
+  // 클릭할 때마다 인덱스를 1씩 증가시키는 핸들러
+  function handleClick() {
+    index = index + 1;
+    console.log(index); // 디버깅용 콘솔 출력
+  }
+
+  // 현재 인덱스의 이미지 정보를 slide 변수에 저장
+  let slide = galleryImages[index];
+
+  return (
+    <div>
+      {/* 버튼 클릭 시 handleClick 이벤트 핸들러 전달 */}
+      <button onClick={handleClick}>Next</button>
+      
+      {/* 현재 이미지의 name과 artist 출력 */}
+      <h2>
+        <i>{slide.name}</i> by {slide.artist}
+      </h2>
+      
+      {/* 전체 이미지 중 몇 번째 이미지인지 위치 표시 */}
+      <h3>
+        ({index + 1} of {galleryImages.length})
+      </h3>
+      
+      {/* 현재 인덱스의 이미지 및 설명(description) 출력 */}
+      <img src={slide.url} alt={slide.alt} />
+      <p>{slide.description}</p>
+    </div>
+  );
+}
+
+```
+---
+
 # 📅 11주차: 비디오 엘리먼트 제어 및 이벤트 핸들러 모듈화 (5월 13일)
 
 ---

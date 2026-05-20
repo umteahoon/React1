@@ -5,9 +5,10 @@
 // import TeaGathering from './components/TeaGathering';
 // import ButtonCom from "./components/Buttoncom/ButtonCom";
 // import Toolbar from "./components/Buttoncom/Toolbar";
-import Bubble from "./components/bubble/Bubble";
-import Signup1 from "./components/Signup1";
-import Signup2 from "./components/Signup2";
+// import Bubble from "./components/bubble/Bubble";
+// import Signup1 from "./components/Signup1";
+// import Signup2 from "./components/Signup2";
+import Carousel from "./components/Carousel/Carousel";
 
 function App() {
   return (
@@ -36,11 +37,14 @@ function App() {
       {/* <Bubble /> */}
 
       {/* Signup1: 기본 동작 유지 (새로고침 발생) */}
-      <Signup1 />
+      {/* <Signup1 /> */}
       
       {/* Signup2: 기본 동작 방지 (새로고침 없음) */}
       {/* 3. 루트 컴포넌트에서 Signup2를 추가로 호출합니다. */}
-      <Signup2 />
+      {/* <Signup2 /> */}
+
+      {/* 9. 루트 컴포넌트에서 Carousel을 추가로 호출합니다. */}
+      <Carousel />
     </div>
   );
 }
