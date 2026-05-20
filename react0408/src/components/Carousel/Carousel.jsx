@@ -1,17 +1,23 @@
-import { galleryImages } from "./imgData.jsx";
+import { useState } from "react";
+import { galleryImages } from "./imgData";
 
 export default function Carousel() {
-  let index = 0;
+  const [index, setIndex] = useState(0);
 
-  function handleClick() {
-    index = index + 1;
-    console.log(index);
+  function handleNext() {
+    if (index === galleryImages.length - 1) {
+      setIndex(0);
+    } else {
+      setIndex(index + 1);
+      console.log(index);
+    }
+    
   }
 
   let slide = galleryImages[index];
   return (
     <>
-      <button onClick={handleClick}>Next</button>
+      <button onClick={handleNext}>Next</button>
       <h2>
         <i>{slide.name} </i>
         by {slide.artist}
