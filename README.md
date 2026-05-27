@@ -35,19 +35,149 @@
 
 ---
 
-## 3. 리액트의 일괄 처리 메커니즘 (Batching)
+## 3. 실습 (인덱스 예외 처리 및 양방향 제어)
 
-리액트는 애플리케이션의 성능 최적화와 불필요한 재렌더링 방지를 위해 '일괄 처리'라는 독특한 방식으로 상태를 업데이트합니다.
+`useState`를 적용하여 버튼을 조작할 때, 배열의 크기를 벗어나는 예외 상황 처리와 화면 렌더링 메커니즘에 대한 디버깅 단계입니다.
 
-### (1) 일괄 처리 (Batching)의 개념
-- **정의**: 이벤트 핸들러 내의 모든 코드가 완전히 실행될 때까지 기다렸다가, 누적된 모든 상태 변경 요청을 한꺼번에 모아서 한 번에 처리하는 방식입니다.
-- **비유**: 식당에서 손님이 주문할 때 메뉴를 하나 말할 때마다 주방으로 뛰어가지 않고, 손님이 모든 주문을 마칠 때까지 메모지에 적어두었다가 한 번에 주방에 전달하는 것과 같습니다.
+### (1) 인덱스 초과 에러와 Error Boundary
+- **현상**: 클릭을 계속 진행하면 5번째 클릭에서 더 이상 화면이 렌더링 되지 않고 화면에서 UI가 제거되는 현상이 나타납니다. 이는 기본적인 React의 렌더링 오류 동작 방식 때문입니다.
+- **오류 메시지**: `An error occurred in the <Carousel> component. Consider adding an error boundary to your tree to customize error handling behavior.`
+- **해석**: 이 오류 메시지는 Carousel 컴포넌트에서 오류가 발생했는데 "오류 처리 동작을 사용자 지정하려면 트리에 error boundary를 추가"하라는 것입니다. 즉, 빈 화면이 아니라 error boundary를 이용해서 오류 메시지를 출력할 수 있도록 수정하라는 것입니다. (error boundary를 추가하는 것은 학습하려는 범위에서 벗어나므로 설명은 생략합니다.)
+- **목표**: 오류가 발생하는 근본적인 원인을 파악하고, 오류가 발생하지 않도록 코드를 수정하여 해결합니다.
 
-### (2) 일괄 처리의 장점
-- **성능 최적화**: 핸들러 내부에 10개의 상태 변경 코드가 있더라도 화면을 10번 다시 그리지 않고, 마지막에 단 1번만 재렌더링을 수행하므로 브라우저의 연산 부담을 획기적으로 줄여줍니다.
-- **안정성 확보**: 상태가 완전히 정리되지 않은 어중간한 상태(반만 업데이트된 상태)로 UI가 화면에 먼저 그려지는 불완전한 렌더링 현상을 방지합니다.
+### (2) 인덱스 범위 조건절 설계 규칙
+- **동작**: 
+  - `handleNext` 내부에서 `galleryImages`의 크기와 `index` 값을 비교합니다. 조건절이 `true`면(마지막 방 번호에 도달하면) `index` 값을 `0`으로 초기화합니다. 조건절이 `false`면 `index` 값에 `1`을 더합니다.
+  - `handlePrevious` 내부에서도 경계값을 체크하여 현재 `index`가 `0`일 때 이전 버튼을 누르면 인덱스가 음수로 가지 않고 배열의 가장 마지막 번호(`galleryImages.length - 1`)로 점프하여 순환하도록 제어합니다.
 
+### (3) 상태 값 불일치 현상과 일괄 처리 (Batching)
+- **현상**: 이미지는 변경된 데이터가 정상적으로 렌더링 되는데, `console`을 보면 출력 값은 여전히 이전 값을 유지하는 현상입니다. 초기 렌더링은 `state`의 초기값이 `0`이기 때문에 0번 데이터가 화면에 출력됩니다.
+- **원인**: 클릭을 하면 함수 내부에서 상태 변경 함수를 호출하더라도, 이는 실시간으로 변수 값을 바꾸는 것이 아니라 내부적으로 계산되어 업데이트를 예약만 해둡니다.
+- **메커니즘**: 그렇기 때문에 바로 다음 줄에 있는 `console.log`는 여전히 현재 핸들러 안에서 유지되고 있는 변경 전의 상태 값을 그대로 출력하게 됩니다. 리액트는 이벤트 핸들러 안의 모든 코드가 완전히 실행될 때까지 기다렸다가 상태 업데이트를 한꺼번에 모아서 처리(Batching)합니다. 이 과정이 완료되면 컴포넌트를 단 1번만 다시 렌더링합니다.
 
+---
+
+## 4. State Hook의 동작 원리
+
+리액트에서 Hook이 가지는 고유한 정의와 컴포넌트 내부에 적용할 때 반드시 지켜야 하는 제약 사항들입니다.
+
+### (1) State Hook의 기본 동작 정리
+- **정의**: React에서는 `useState`와 같이 “use”로 시작하는 모든 함수를 Hook이라고 합니다. Hook은 React가 오직 렌더링 중일 때만 사용할 수 있는 특별한 함수입니다. Hook을 사용하면 다양한 React 기능을 “연결(hook into)”할 수 있습니다. `useState`는 React에서 제공하는 여러 가지 Hook 중 하나입니다.
+
+### (2) Hook 사용 시 주의할 점 (3대 제약 사항)
+1. Hook을 사용하기 위해서는 일반 모듈과 마찬가지로 `import` 해서 사용합니다.
+2. Hook은 컴포넌트의 최상위 수준 또는 사용자 정의 Hook에서만 호출할 수 있습니다.
+3. 조건문, 반복문 또는 기타 중첩 함수 내부에서는 Hook을 호출할 수 없습니다.
+- **결론**: Hook은 함수의 형식을 취하고 있지만 “컴포넌트가 어떤 기능을 필요로 하는지 React에게 자신의 요구사항을 알려주는 선언문”으로 이해하는 것이 좋습니디.
+
+### (3) React가 state를 강조하는 이유와 생태계
+- **철학**: React의 핵심 철학 자체가 state 기반 UI이기 때문이며, 렌더링 모델 대부분이 state로 설명되기 때문입니다. 다른 Hook들도 결국 state 문제를 해결하기 위한 도구입니다. React 팀이 “DOM 직접 조작”보다 “상태 기반 사고”를 가장 중요하게 보기 때문입니다.
+- **개념 연결**: `useState`를 배우면 동시에 렌더링 / 재렌더링 / 스냅샷 / 이벤트 핸들러 / JSX 재생성 / React의 함수 호출 방식 / 선언형 UI / Virtual DOM과 같은 개념들이 연결되기 시작합니다.
+- **예외 처리 장치**: 반대로 `useEffect` 같은 것은 사실 React의 “핵심 철학”이라기보다 외부 시스템과 동기화하기 위한 예외 처리 장치(escape hatch)에 가깝습니다. 따라서 공식문서에서도 Escape Hatches에 배치한 것입니다.
+
+### (4) React의 거의 모든 기능은 state 중심으로 연결
+- **핵심**: 결국 나머지는 “state가 변하면 UI를 어떻게 유지할 것인가?”라는 문제를 해결하는 도구들입니다.
+- **기능별 역할 관계**:
+  - `useState`: State 저장
+  - `userReducer`: 복잡한 State 관리
+  - `Context`: State 공유
+  - `useMemo`: state 기반 계산 최적화
+  - `useEffect`: state 변화 후 동작
+  - `Suspense`: 비동기 상태 처리
+  - `Server Components`: 상태 경계 최적화
+
+---
+
+## 5. State Hook의 동작 원리 - 여러 개의 state를 사용하기
+
+하나의 컴포넌트 내부에서 여러 개의 독립된 상태 주머니를 생성하여 다중 화면 제어를 구현하는 방식입니다.
+
+### (1) 다중 상태 추가 필요성
+- **개요**: 현재 Carousel 컴포넌트는 description을 비롯한 모든 데이터를 출력하고 있습니다. 여기서 description 부분을 원하는 경우에만 보이도록 하려면 토글 버튼을 추가하고 description이 보이거나 안보일 수 있도록 제어하면 됩니다. 그리고 토글의 상태를 기억하도록 state를 추가합니다. 실습을 통해 토글 버튼을 추가해 보겠습니다.
+
+### (2) Carousel 컴포넌트 description 출력 여부 토글 수정 절차 (Step1)
+1. 블리언(Boolean) 타입의 State를 추가합니다. 변수의 이름은 `more`로 합니다.
+2. 토글할 수 있는 `handleMoreClick` 이벤트 핸들러를 작성합니다. (내부에서 반전 연산자 `!`를 사용해 상태값을 스위칭합니다.)
+3. 버튼을 추가하고, 클릭 이벤트에 `handleMoreClick` 핸들러를 전달합니다.
+4. 버튼 라벨은 `more`의 값에 따라서 `Hide description` / `Show description` 으로 변경합니다.
+5. `more`가 true면 description을 보여주고, false면 보이지 않게 처리하는 논리곱 연산자(`&&`) 조건부 렌더링을 적용합니다.
+
+---
+
+## 6. Carousel 실습 코드 조각 (구조별 분할)
+
+### (1) 모듈 Import 및 State 선언부
+```jsx
+import { useState } from "react";
+import { galleryImages } from "./imgData";
+import styles from "./Carousel.module.css";
+
+export default function Carousel() {
+  // 인덱스 상태 관리 (현재 보여줄 이미지의 방 번호)
+  const [index, setIndex] = useState(0);
+  
+  // 상세 정보 보기/숨기기 토글 상태 관리 (true / false)
+  const [more, setMore] = useState(false);
+```
+
+### (2) 기능 구현부 (이벤트 핸들러 함수 영역)
+```jsx
+// 다음(Next) 버튼 핸들러: 마지막 페이지에 도달하면 0으로 순환
+  function handleNext() {
+    if (index === galleryImages.length - 1) {
+      setIndex(0);
+    } else {
+      setIndex(index + 1);
+    }
+  }
+
+  // 이전(Previous) 버튼 핸들러: 0번 페이지에서 누르면 마지막 페이지로 점프
+  function handlePrevious() {
+    if (index === 0) {
+      setIndex(galleryImages.length - 1);
+    } else {
+      setIndex(index - 1);
+    }
+  }
+
+  // 토글 버튼 핸들러: true를 false로, false를 true로 스위칭
+  function handleMoreClick() {
+    setMore(!more);
+  }
+
+  // 현재 인덱스에 매칭되는 데이터 객체 추출
+  let slide = galleryImages[index];
+
+```
+### (3) 화면 UI 출력부 (JSX Return 영역)
+```jsx
+return (
+    <section className={styles.wrapper}>
+      <h2>
+        <i>{slide.name} </i>
+        by {slide.artist}
+      </h2>
+      <h3>
+        ({index + 1} of {galleryImages.length})
+      </h3>
+      <img src={slide.url} alt={slide.alt} />
+      <p>{slide.description}</p>
+      <p>
+        <button onClick={handlePrevious} className={styles.button}>
+          Previous
+        </button>
+        <button onClick={handleNext} className={styles.button}>
+          Next
+        </button>
+      </p>
+      <button onClick={handleMoreClick}>
+        {more ? "Hide" : "Show"} description
+      </button>
+      {more && <p>{slide.description}</p>}
+    </section>
+  );
+}
+```
 ---
 
 # 📅 12주차: 로컬 변수 상태 저장과 캐러셀(Carousel) 컴포넌트 구현 (5월 20일)
