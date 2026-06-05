@@ -8,7 +8,9 @@
 // import Bubble from "./components/bubble/Bubble";
 // import Signup1 from "./components/Signup1";
 // import Signup2 from "./components/Signup2";
-import Carousel from "./components/Carousel/Carousel";
+// import Carousel from "./components/Carousel/Carousel";
+import BtnClick from "./components/BtnClick";
+
 
 function App() {
   return (
@@ -44,8 +46,9 @@ function App() {
       {/* <Signup2 /> */}
 
       {/* 9. 루트 컴포넌트에서 Carousel을 추가로 호출합니다. */}
-      <Carousel />
-      <Carousel />
+      {/* <Carousel />
+      <Carousel /> */}
+      <BtnClick/>
     </div>
   );
 }

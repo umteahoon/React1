@@ -1,5 +1,91 @@
 # ⚛️ React 학습 저장소 (2026)   엄태훈
 
+# 📅 14주차: 스냅샷으로서의 State와 비동기적 상태 제어 (6월 5일)
+
+---
+
+## 1.스냅샷처럼 동작하는 State
+
+리액트에서 상태(State) 변수가 업데이트되는 논리적 메커니즘과 일반 자바스크립트 변수와의 차이점을 분석합니다.
+
+### (1) 스냅샷 동작의 개요
+- **정의**: State의 변수는 읽고 쓸 수 있는 일반 자바스크립트 변수처럼 보일 수 있습니다. 하지만 state는 스냅샷처럼 동작합니다.
+- **동작**: state 변수를 `set` 함수로 업데이트해도 이미 가지고 있는 state 변수는 변경되지 않고, 대신 리렌더링이 촉발(트리거)됩니다. 컴포넌트의 state에서는 `set` 함수의 호출이 트리거로 작용하여 렌더링이 이루어집니다.
+
+### (2) [ Note ] 스냅샷(Snapshot)의 개념 이해
+- **일반적 정의**: 스냅샷(Snapshot)은 원래 자연스러운 순간이나 동작을 재빠르게 포착하여 찍은 사진을 의미합니다.
+- **IT 분야 정의**: 그러나 IT 분야에서는 “특정 시간대의 데이터 및 파일 시스템 상태”를 그대로 기록해 두는 기술을 의미합니다. 물론 필요한 시점에 기록해둔 스냅샷을 복원하는 것도 가능합니다.
+
+---
+
+## 2. 실습 (연속적인 상태 변경 함수 호출과 배치 처리)
+
+하나의 이벤트 핸들러 내부에서 상태 변경 함수를 연속으로 호출할 때 발생하는 상태 박제 현상을 실험합니다.
+
+### (1) Counter 컴포넌트 동작 분석
+- **현상**: `number`는 클릭당 한 번만 증가한다는 점에 주목해야 합니다. 핸들러 내부에서 `set` 함수를 몇 번 호출하던 상관없이 모두 같은 동작을 합니다. 따라서 1만 증가하게 됩니다.
+- **이유**: State의 초기값은 `0`이기 때문에 초기 렌더링에서 `number`는 `0`이었습니다. 따라서 `handleIncrease3` 핸들러에서 상태 변경 함수가 호출된 후에도 `number`의 값은 여전히 `0`입니다.
+- **치환 원리**:
+  - 첫 번째 호출: `setNumber(0 + 1)`
+  - 두 번째 호출: `setNumber(0 + 1)`
+  - 세 번째 호출: `setNumber(0 + 1)`
+  - 이벤트 핸들러가 실행되는 동안 `number`는 계속 `0`으로 고정되어 계산되기 때문에, 최종적으로 리액트는 동일한 스냅샷 값인 1로 화면을 재렌더링합니다.
+
+---
+
+## 3. 실습 (시간 경과에 따른 State와 Alert 확인)
+
+이벤트 핸들러 내에서 상태를 변경한 직후 비동기 알림창(`alert`)을 띄웠을 때의 데이터 접근 시점을 파악합니다.
+
+```jsx
+export default function BtnClick() {
+  const [number, setNumber] = useState(0);
+
+  function handleIncrease3() {
+    setNumber(number + 1);
+    console.log(number);
+    setNumber(number + 1);
+    console.log(number);
+    setNumber(number + 1);
+    console.log(number);
+  }
+
+  function handleIncrease5() {
+    setNumber(number + 5);
+    alert(number);
+  }
+
+  function handleTimer() {
+    setNumber(number + 5);
+    setTimeout(() => {
+      alert(number);
+    }, 1000);
+  }
+
+  return (
+    <>
+      <h1>{number}</h1>
+      <button onClick={handleIncrease3}>+3 </button>
+      <button onClick={handleIncrease5}>+5 </button>
+      <button onClick={handleTimer}>Timer</button>
+    </>
+  );
+}
+```
+
+### (1) 시간 경과에 따른 State 값 추측
+- **질문**: 만일 클릭 핸들러가 `setNumber(number + 5)` 호출 직후 `alert(number)`를 수행한다면, 버튼을 클릭할 때 alert창에 뭐가 표시될까요?
+- **결과**: 보통은 “0”을 표시한다고 추측할 수 있습니다. 렌더링 스냅샷이 유지되므로 실제 호출 구조는 `setNumber(0 + 5)`와 `alert(0)` 형태로 묶여 실행됩니다.
+
+### (2) BtnClick 컴포넌트 구현 절차 (Step2)
+1. `handleIncrease5` 클릭 핸들러를 위 예시와 같이 작성합니다. (상태 변경 함수 호출 후 바로 하단에 alert창을 띄우도록 설계)
+2. `handleIncrease5` 핸들러를 호출할 버튼을 생성합니다.
+3. 기존 Step1의 버튼과 구별이 되도록 스타일이나 `&nbsp;`를 이용하여 스페이스를 추가합니다.
+4. 버튼을 클릭하여 화면 렌더링 결과와 alert 팝업창에 뜨는 숫자가 어떻게 다르게 동작하는지 확인합니다.
+
+---
+
+
 
 # 📅 13주차: 상태 업데이트와 일괄 처리 메커니즘 (5월 27일)
 
